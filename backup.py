@@ -31,8 +31,8 @@ def trim_trailing_slash(s):
         return s[:-1]
     return s
 
-def confirm(s, skipped=False):
-    if skipped:
+def confirm(s, autoconfirm=False):
+    if autoconfirm:
         return
 
     ans = input(s + " [y/N] ")
@@ -210,7 +210,7 @@ def main():
         target.showSource(source)
 
     # Final confirmation
-    confirm("Proceed?")
+    confirm("Proceed?", args.autoconfirm)
     for source in sources:
         target.rsync(source)
     print(Color.purple("All done!"))
