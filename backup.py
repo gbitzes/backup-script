@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import math, os, subprocess, sys, json, io
+import math, os, subprocess, sys, json, io, argparse
 
 class Color:
     sequences = {
@@ -171,10 +171,24 @@ def readconfig(configfile):
     target = Target(config["target"])
     return (sources, target)
 
+def getargs():
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+      description="A small script to automate running rsync for backup purposes.\n")
+
+    parser.add_argument('--config', type=str, required=True, help="Location of configuration file")
+    parser.add_argument('--autoconfirm', dest='autoconfirm', action='store_true', help='Unattended mode - confirm automatically')
+    parser.set_defaults(autoconfirm=False)
+
+    args = parser.parse_args()
+
+    args.config = os.path.expanduser(args.config)
+    args.config = os.path.realpath(args.config)
+    args.config = os.path.normpath(args.config)
+    return args
+
 def main():
-    if len(sys.argv) < 2:
-        err("No configuration file was supplied. Usage: {} configfile".format(sys.argv[0]))
-    (sources, target) = readconfig(sys.argv[1])
+    args = getargs()
+    (sources, target) = readconfig(args.config)
 
     for source in sources:
         source.show()
